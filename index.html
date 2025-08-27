@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>АО «Россети Кубань» × Операторы связи — Взаимодействие по ВОЛС</title>
+  <meta name="description" content="Единый регламент и генератор документов для взаимодействия АО «Россети Кубань» с операторами связи при инвентаризации и включении новых объёмов ВОЛС на ВЛ." />
+
+  <style>
+    /* ====== Брендовые токены (Россети) ====== */
+    :root{
+      --rs-blue:#0033A0;      /* Россети синий */
+      --rs-blue-600:#0A47C6;  /* Акцентный синий */
+      --rs-accent:#00AEEF;    /* Голубой акцент */
+      --bg:#F5F7FB;           /* Фон */
+      --ink:#0B1A2B;          /* Текст */
+      --muted:#5F6B7A;        /* Вторичный текст */
+      --card:#FFFFFF;         /* Карточка */
+      --border:#E6EDF6;       /* Границы */
+      --ok:#0A7A2D;           /* Ок */
+      --warn:#B36B00;         /* Предупреждение */
+      --bad:#B00020;          /* Ошибка */
+      --shadow:0 12px 30px rgba(0,0,0,.06), 0 3px 8px rgba(0,0,0,.05);
+      --radius:18px;
+    }
+
+    /* ====== База ====== */
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font:400 16px/1.6 system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,"Noto Sans",sans-serif}
+    h1,h2,h3{margin:0 0 .6rem}
+    h1{font-weight:800;letter-spacing:.2px}
+    h2{font-weight:700}
+    h3{font-weight:700}
+    p{margin:.4rem 0 .9rem}
+    a{color:var(--rs-blue-600);text-decoration:none}
+    a:hover{text-decoration:underline}
+    .container{max-width:1160px;margin:0 auto;padding:24px}
+
+    /* ====== Шапка ====== */
+    header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.85);backdrop-filter:saturate(180%) blur(14px);border-bottom:1px solid var(--border)}
+    .bar{display:flex;align-items:center;gap:18px;min-height:64px}
+    .brand{display:flex;align-items:center;gap:14px}
+    .logo{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--rs-blue),var(--rs-blue-600));display:grid;place-items:center;color:#fff;font-weight:800;box-shadow:var(--shadow)}
+    .title{font-weight:800;color:var(--rs-blue);letter-spacing:.3px}
+    nav{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap}
+    nav a{padding:8px 12px;border-radius:999px;border:1px solid var(--border);background:#fff}
+
+    /* ====== Хиро ====== */
+    .hero{padding:36px 0}
+    .hero-wrap{display:grid;grid-template-columns:1.3fr .9fr;gap:22px}
+    .hero-card{background:linear-gradient(180deg,#ffffff 0%, #f9fbff 100%);border:1px solid var(--border);border-radius:var(--radius);padding:26px;box-shadow:var(--shadow)}
+    .hero h1{font-size:34px}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:13px}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+    .kpi{background:#fff;border:1px solid var(--border);border-radius:14px;padding:14px;box-shadow:var(--shadow)}
+    .kpi .v{font-size:22px;font-weight:800;color:var(--rs-blue)}
+    .kpi .l{font-size:12px;color:var(--muted)}
+
+    /* ====== Карточки/секции ====== */
+    section{margin:26px 0}
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card .hd{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+    .card .bd{padding:18px 20px}
+
+    /* ====== Гриды ====== */
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+
+    /* ====== Степпер процесса ====== */
+    .steps{counter-reset:step}
+    .step{display:grid;grid-template-columns:52px 1fr;gap:14px;padding:14px 0}
+    .step .dot{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--rs-blue),var(--rs-accent));color:#fff;display:grid;place-items:center;font-weight:800}
+    .step .dot::before{counter-increment:step;content:counter(step)}
+    .step .txt h3{margin:0 0 .4rem}
+    .step+.step{border-top:1px dashed var(--border)}
+
+    /* ====== Плашки ====== */
+    .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border:1px solid var(--border);border-radius:999px;background:#fff;color:var(--muted);font-size:13px}
+    .pill.ok{color:var(--ok)}
+    .pill.warn{color:var(--warn)}
+
+    /* ====== Формы / генератор ====== */
+    .form{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .full{grid-column:1/-1}
+    label{display:block;font-size:12px;color:var(--muted);margin:6px 0}
+    input,select,textarea{width:100%;padding:12px 12px;border:1px solid var(--border);border-radius:12px;background:#fff;color:var(--ink);font:inherit}
+    textarea{min-height:160px;resize:vertical}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}
+    .btn{appearance:none;border:none;border-radius:999px;padding:10px 16px;background:var(--rs-blue);color:#fff;font-weight:700;cursor:pointer}
+    .btn.secondary{background:#fff;color:var(--rs-blue);border:1px solid var(--border)}
+    .btn.ghost{background:transparent;color:var(--rs-blue);border:1px dashed var(--rs-blue)}
+
+    /* ====== Таблица SLA ====== */
+    table{width:100%;border-collapse:collapse;border:1px solid var(--border);overflow:hidden;border-radius:12px}
+    th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left}
+    thead th{background:#f7faff;color:#27364a}
+    tbody tr:hover{background:#fafcff}
+
+    /* ====== Футер ====== */
+    footer{padding:28px 0;color:var(--muted)}
+
+    /* ====== Печать ====== */
+    @media print{
+      header, nav, .no-print{display:none !important}
+      .container{max-width:100%;padding:0}
+      .card{box-shadow:none;border-color:#dfe6f3}
+      body{background:#fff}
+    }
+
+    /* ====== Адаптив ====== */
+    @media (max-width: 980px){
+      .hero-wrap{grid-template-columns:1fr}
+      .kpis{grid-template-columns:repeat(2,1fr)}
+      .grid-4{grid-template-columns:repeat(2,1fr)}
+      .grid-3{grid-template-columns:repeat(2,1fr)}
+      .form{grid-template-columns:1fr}
+    }
+    @media (max-width: 560px){
+      .kpis{grid-template-columns:1fr}
+      nav{display:none}
+      .hero h1{font-size:28px}
+    }
+  </style>
+</head>
+<body>
+  <!-- ====== Header ====== -->
+  <header>
+    <div class="container bar">
+      <div class="brand">
+        <div class="logo" aria-label="Россети">РК</div>
+        <div class="title">Взаимодействие по ВОЛС: АО «Россети Кубань» × операторы связи</div>
+      </div>
+      <nav class="no-print">
+        <a href="#about">Цель</a>
+        <a href="#process">Процесс</a>
+        <a href="#sla">Сроки</a>
+        <a href="#generator">Генератор</a>
+        <a href="#routing">Маршрутизация</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ====== Hero ====== -->
+    <section class="hero" id="top">
+      <div class="hero-wrap">
+        <div class="hero-card">
+          <span class="badge">Единый порядок для всех операторов связи</span>
+          <h1>Прозрачный и быстрый допуск к ВЛ<br><span style="color:var(--rs-blue)">и включение новых объёмов ВОЛС</span></h1>
+          <p>Сервис для филиалов АО «Россети Кубань» и всех операторов связи: процесс, сроки, роли, шаблоны и отправка писем ответственным.</p>
+          <div class="kpis">
+            <div class="kpi"><div class="v">≤ 5 р/дней</div><div class="l">Ответ РСК с контактами допуска</div></div>
+            <div class="kpi"><div class="v">≤ 3 дн</div><div class="l">Оформление акта после работ</div></div>
+            <div class="kpi"><div class="v">≤ 7 к/дн</div><div class="l">Отправка акта на подписание</div></div>
+            <div class="kpi"><div class="v">≤ 7 р/дн</div><div class="l">Подписание оператором</div></div>
+          </div>
+          <div class="actions" style="margin-top:12px">
+            <button class="btn" onclick="window.print()">Экспорт в PDF</button>
+            <button class="btn secondary" onclick="scrollToEl('#generator')">Перейти к генератору</button>
+          </div>
+        </div>
+        <div class="hero-card">
+          <h3 style="color:var(--rs-blue)">Комплект документов</h3>
+          <ul>
+            <li><b>Заявление</b> на допуск к ВЛ</li>
+            <li><b>Письмо о допуске персонала</b> (ПОТЭЭ)</li>
+            <li><b>Гарантийное письмо</b> (ТУ, проект/раб.док, мероприятия по ВЛ)</li>
+            <li><b>Акт инвентаризации</b> (2 экз.) — основание для ДС</li>
+          </ul>
+          <details class="no-print" style="margin-top:10px">
+            <summary>Как это работает?</summary>
+            <div style="margin-top:8px;color:var(--muted)">
+              • Заполните форму → выберите шаблоны → получите черновики и подготовленный email.<br/>
+              • Шаблоны и маршруты можно подключить из репозитория (без бэкенда).<br/>
+              • По умолчанию доступен базовый набор текстов — чтобы начать сразу.
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== About ====== -->
+    <section id="about" class="card">
+      <div class="hd"><h2>Цель</h2><span class="pill">ВОЛС на ВЛ</span></div>
+      <div class="bd">
+        <p>Установить единый для всех операторов порядок допуска к ВЛ и обмена документами для последующего включения новых объёмов в Дополнительное соглашение к базовому договору.</p>
+        <div class="grid-3">
+          <div>
+            <h3>Прозрачность</h3>
+            <p>Пошаговый сценарий действий, стандартные формы, единые точки входа.</p>
+          </div>
+          <div>
+            <h3>Скорость</h3>
+            <p>Жёсткие SLA по ответам, оформлению и подписанию актов.</p>
+          </div>
+          <div>
+            <h3>Юридическая чистота</h3>
+            <p>Формулировки и сроки соответствуют согласованной практике взаимодействия.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Process ====== -->
+    <section id="process" class="card">
+      <div class="hd"><h2>Процесс «под ключ»</h2><span class="pill ok">Для всех операторов</span></div>
+      <div class="bd steps">
+        <div class="step">
+          <div class="dot"></div>
+          <div class="txt">
+            <h3>Запрос от оператора связи</h3>
+            <p>Оператор направляет в соответствующий филиал АО «Россети Кубань» <b>Заявление на допуск</b>, <b>письмо о допуске персонала</b> по ПОТЭЭ и <b>гарантийное письмо</b> о выполнении мероприятий: получение ТУ, согласование проектной/рабочей документации, возможные мероприятия по переустройству/реконструкции ВЛ.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="dot"></div>
+          <div class="txt">
+            <h3>Ответ филиала РСК (≤ 5 рабочих дней)</h3>
+            <p>Филиал направляет контактные данные допускающего представителя. Допуск организуется по требованиям ПОТЭЭ и внутреннего порядка допуска подрядных организаций.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="dot"></div>
+          <div class="txt">
+            <h3>Инвентаризация и акт (≤ 3 дня + отправка ≤ 7 к/дн)</h3>
+            <p>После выполнения работ филиал РСК в течение <b>3 дней</b> оформляет <b>Акт инвентаризации</b> (2 экз.) и в течение <b>7 календарных дней</b> направляет его оператору для подписания.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="dot"></div>
+          <div class="txt">
+            <h3>Подписание оператором (≤ 7 рабочих дней)</h3>
+            <p>При отсутствии замечаний оператор подписывает и возвращает один экземпляр в адрес филиала РСК; при наличии замечаний — направляет мотивированные возражения.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="dot"></div>
+          <div class="txt">
+            <h3>Включение в доп. соглашение</h3>
+            <p>Подписанные сторонами <b>акты инвентаризации</b> являются основанием для включения новых объёмов размещения ВОЛС на ВЛ в <b>ДС</b> к договору.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== SLA ====== -->
+    <section id="sla" class="card">
+      <div class="hd"><h2>Сроки и SLA</h2><span class="pill warn">Контроль точек</span></div>
+      <div class="bd">
+        <div style="overflow:auto">
+          <table>
+            <thead>
+              <tr>
+                <th>Этап</th>
+                <th>Ответственный</th>
+                <th>Срок</th>
+                <th>Артефакт</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Направление Заявления + писем (ПОТЭЭ, гарантийное)</td>
+                <td>Оператор связи</td>
+                <td>Инициатива</td>
+                <td>Заявление, письмо, гарантийное письмо</td>
+              </tr>
+              <tr>
+                <td>Ответ с контактами допуска</td>
+                <td>Филиал АО «Россети Кубань»</td>
+                <td>≤ 5 рабочих дней</td>
+                <td>Контакт допускающего</td>
+              </tr>
+              <tr>
+                <td>Акт инвентаризации</td>
+                <td>Филиал АО «Россети Кубань»</td>
+                <td>≤ 3 календарных дня</td>
+                <td>Акт (2 экз.)</td>
+              </tr>
+              <tr>
+                <td>Отправка акта для подписания</td>
+                <td>Филиал АО «Россети Кубань»</td>
+                <td>≤ 7 календарных дней</td>
+                <td>Направленный акт</td>
+              </tr>
+              <tr>
+                <td>Рассмотрение/подписание акта</td>
+                <td>Оператор связи</td>
+                <td>≤ 7 рабочих дней</td>
+                <td>Подписанный акт / замечания</td>
+              </tr>
+              <tr>
+                <td>Включение объёмов в ДС</td>
+                <td>Стороны</td>
+                <td>После подписания актов</td>
+                <td>Доп. соглашение к договору</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <details class="no-print" style="margin-top:14px">
+          <summary>План-график от контрольной даты</summary>
+          <div class="grid-3" style="margin-top:10px">
+            <div>
+              <label>Старт (дата получения Заявления филиалом)</label>
+              <input type="date" id="startDate" />
+            </div>
+            <div>
+              <label>Оценка сроков</label>
+              <div id="timeline" style="padding:10px 12px;border:1px dashed var(--border);border-radius:12px;background:#fff;min-height:46px"></div>
+            </div>
+            <div class="actions" style="align-items:end">
+              <button class="btn secondary" onclick="buildTimeline()" type="button">Рассчитать даты</button>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- ====== Генератор документов ====== -->
+    <section id="generator" class="card">
+      <div class="hd"><h2>Генератор документов</h2><span class="pill ok">Шаблоны из репозитория</span></div>
+      <div class="bd">
+        <form class="form" onsubmit="event.preventDefault(); generateAll();">
+          <div>
+            <label>Филиал АО «Россети Кубань»</label>
+            <input id="rk_branch" placeholder="Например: Краснодарские ЭС" required>
+          </div>
+          <div>
+            <label>Оператор связи</label>
+            <select id="op_name" onchange="toggleCustomOp()">
+              <option value="Ростелеком">ПАО «Ростелеком»</option>
+              <option value="МТС">ПАО «МТС»</option>
+              <option value="Билайн">ПАО «ВымпелКом» (Билайн)</option>
+              <option value="МегаФон">ПАО «МегаФон»</option>
+              <option value="ЭР-Телеком">АО «ЭР-Телеком Холдинг»</option>
+              <option value="TTK">АО «Компания ТрансТелеКом» (ТТК)</option>
+              <option value="Другое">Другое…</option>
+            </select>
+          </div>
+          <div id="op_custom_wrap" style="display:none">
+            <label>Название оператора (если «Другое»)</label>
+            <input id="op_custom" placeholder="Полное наименование с ОПФ">
+          </div>
+          <div>
+            <label>Подразделение оператора</label>
+            <input id="op_unit" placeholder="Например: Краснодарский филиал" required>
+          </div>
+          <div>
+            <label>Объект / ВЛ</label>
+            <input id="object" placeholder="ВЛ-10 кВ №… участок км …–…" required>
+          </div>
+          <div>
+            <label>№ и дата базового договора</label>
+            <input id="contract" placeholder="№ РЦ12-1860-24 от 17.07.2025" required>
+          </div>
+          <div>
+            <label>Период работ</label>
+            <input id="period" placeholder="Например: сентябрь 2025" required>
+          </div>
+          <div>
+            <label>Контактные данные</label>
+            <input id="contacts" placeholder="ФИО, должность, телефон, email" required>
+          </div>
+          <div class="full">
+            <label>Перечень работ / примечания</label>
+            <textarea id="scope" placeholder="Кратко опишите план работ"></textarea>
+          </div>
+
+          <div class="full">
+            <label>Шаблоны</label>
+            <div id="tplList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px"></div>
+            <div style="margin-top:8px;color:var(--muted)">Шаблоны подгружаются из <code>/templates/manifest.json</code>. Если файл отсутствует — используются базовые заготовки.</div>
+          </div>
+
+          <div class="full actions no-print" style="margin-top:6px">
+            <button class="btn" type="submit">Сформировать</button>
+            <button class="btn secondary" type="button" onclick="resetForm()">Сбросить</button>
+          </div>
+        </form>
+
+        <div class="grid-2" style="margin-top:14px">
+          <div>
+            <h3>Предпросмотр</h3>
+            <textarea id="preview" readonly placeholder="Здесь появится текст выбранного шаблона"></textarea>
+            <div class="actions no-print">
+              <button class="btn" onclick="downloadDoc(currentTplId || 'document','Документ')">Скачать .doc</button>
+              <button class="btn ghost" onclick="copyPreview()">Скопировать</button>
+            </div>
+          </div>
+          <div>
+            <h3>Подготовка email</h3>
+            <div class="form">
+              <div class="full">
+                <label>Маршрут (по умолчанию)</label>
+                <select id="route" onchange="updateEmailDraft()"></select>
+              </div>
+              <div>
+                <label>Кому (to)</label>
+                <input id="to" oninput="updateEmailDraft()" placeholder="reg@rk.example">
+              </div>
+              <div>
+                <label>Копия (cc)</label>
+                <input id="cc" oninput="updateEmailDraft()" placeholder="ops@rk.example">
+              </div>
+              <div class="full">
+                <label>Тема</label>
+                <input id="subject" oninput="updateEmailDraft()" placeholder="Заявление на допуск: {{object}}">
+              </div>
+              <div class="full">
+                <label>Тело письма</label>
+                <textarea id="emailBody" oninput="updateEmailDraft()" placeholder="Краткое сопроводительное"></textarea>
+              </div>
+              <div class="full actions">
+                <button class="btn secondary" type="button" onclick="openMailto()">Открыть в почтовом клиенте</button>
+              </div>
+            </div>
+            <details class="no-print" style="margin-top:10px">
+              <summary>Как подключить отправку через веб‑хуки</summary>
+              <p>Заполните <code>window.RK_CFG.transport</code> (см. раздел «Маршрутизация» ниже) — и кнопка «Отправить» появится автоматически.</p>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== Маршрутизация писем ====== -->
+    <section id="routing" class="card">
+      <div class="hd"><h2>Маршрутизация</h2><span class="pill">без бэкенда</span></div>
+      <div class="bd grid-2">
+        <div>
+          <h3>Конфигурация в коде</h3>
+          <p>Вверху скрипта есть объект <code>window.RK_CFG</code> с примерами маршрутов по филиалам/типам писем. Обновите адреса — и они появятся в выпадающем списке.</p>
+          <h3>Файл routes.json (опционально)</h3>
+          <p>Разместите <code>/routes.json</code> в корне репозитория, например:</p>
+          <pre style="white-space:pre-wrap;border:1px solid var(--border);border-radius:12px;padding:10px;background:#fff">{
+  "routes": [
+    {"id":"registry","name":"Регистрация входящих (РСК)","to":"reg@example.ru","cc":"ops@example.ru"},
+    {"id":"filial_kras","name":"Краснодарские ЭС — делопроизводство","to":"kras-reg@example.ru"}
+  ]
+}</pre>
+          <p>Если файл существует — он переопределит маршруты из кода.</p>
+        </div>
+        <div>
+          <h3>Шаблоны из репозитория</h3>
+          <p>Создайте папку <code>/templates</code> и файл <code>manifest.json</code> с перечнем шаблонов:</p>
+          <pre style="white-space:pre-wrap;border:1px solid var(--border);border-radius:12px;padding:10px;background:#fff">{
+  "templates": [
+    {"id":"zayavlenie","name":"Заявление на допуск","file":"zayavlenie.html","subject":"Заявление на допуск: {{object}}"},
+    {"id":"dopusk_pers","name":"Письмо о допуске персонала (ПОТЭЭ)","file":"dopusk_pers.html"},
+    {"id":"garantiynoe","name":"Гарантийное письмо","file":"garantiynoe.html"},
+    {"id":"akt","name":"Акт инвентаризации (черновик)","file":"akt.html"}
+  ]
+}</pre>
+          <p>Внутри шаблонов используйте плейсхолдеры: <code>{{rk_branch}}</code>, <code>{{op_full}}</code>, <code>{{object}}</code>, <code>{{contract}}</code>, <code>{{period}}</code>, <code>{{contacts}}</code>, <code>{{today}}</code>, <code>{{scope}}</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====== FAQ ====== -->
+    <section id="faq" class="card">
+      <div class="hd"><h2>FAQ</h2><span class="pill">оперативные ответы</span></div>
+      <div class="bd grid-2">
+        <div>
+          <h3>Можно ли параллелить несколько объектов?</h3>
+          <p>Да. Формируйте отдельные комплекты для каждой ВЛ/участка, соблюдая SLA и корректно указывая реквизиты.</p>
+          <h3>Как учесть рабочие/календарные дни?</h3>
+          <p>В разделе «Сроки» доступен расчёт ориентировочных дат с учётом рабочих дней (Пн–Пт).</p>
+        </div>
+        <div>
+          <h3>Где редактировать формулировки?</h3>
+          <p>В собственных шаблонах в <code>/templates</code> или в базовых текстах внутри <code>buildDefaultTemplates()</code>.</p>
+          <h3>Передача в делопроизводство</h3>
+          <p>Используйте преднастроенные маршруты или файл <code>routes.json</code> для «Кому/Копия». Отправка — через почтовый клиент (mailto) или веб‑хук.</p>
+        </div>
+      </div>
+    </section>
+
+    <footer class="container">
+      <div>© <span id="y"></span> АО «Россети Кубань». Внутренний сервис сопровождения взаимодействия по ВОЛС на ВЛ (для всех операторов).</div>
+    </footer>
+  </main>
+
+  <script>
+    // ========================
+    // Конфигурация по умолчанию
+    // ========================
+    window.RK_CFG = {
+      routes: [
+        { id:'registry', name:'Регистрация входящих (РСК)', to:'reg@example.ru', cc:'ops@example.ru' },
+        { id:'filial_kras', name:'Краснодарские ЭС — делопроизводство', to:'kras-reg@example.ru' }
+      ],
+      transport: {
+        // type: 'mailto' | 'webhook'
+        type: 'mailto',
+        webhookUrl: '' // укажите URL, чтобы активировать отправку через POST
+      }
+    };
+
+    const $ = sel => document.querySelector(sel);
+    const $all = sel => Array.from(document.querySelectorAll(sel));
+    const val = id => document.getElementById(id).value.trim();
+
+    function scrollToEl(sel){ document.querySelector(sel)?.scrollIntoView({behavior:'smooth',block:'start'}); }
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // ========== SLA timeline (рабочие/календарные дни)
+    function addWorkingDays(date, days){
+      const d = new Date(date);
+      let added = 0;
+      while(added < days){
+        d.setDate(d.getDate()+1);
+        const day = d.getDay();
+        if(day !== 0 && day !== 6) added++; // Пн–Пт
+      }
+      return d;
+    }
+    function addCalendarDays(date, days){ const d = new Date(date); d.setDate(d.getDate()+days); return d; }
+    function fmt(d){ return d.toLocaleDateString('ru-RU'); }
+    function buildTimeline(){
+      const start = $('#startDate').value; if(!start){ $('#timeline').textContent = 'Укажите стартовую дату.'; return; }
+      const d0 = new Date(start);
+      const dReply = addWorkingDays(d0, 5); // ответ РСК
+      const dAct = addCalendarDays(d0, 3);  // оформление акта (<=3 дней после работ — ориентир)
+      const dSend = addCalendarDays(d0, 7); // отправка на подпись (<=7 к/дн)
+      const dSign = addWorkingDays(dSend, 7); // подпись оператором (<=7 р/дн)
+      $('#timeline').innerHTML = `Ответ РСК до <b>${fmt(dReply)}</b> • Акт ориентировочно до <b>${fmt(dAct)}</b> • Отправка акта до <b>${fmt(dSend)}</b> • Подписание оператором до <b>${fmt(dSign)}</b>`;
+    }
+
+    // ========== Шаблоны: манифест из /templates или дефолт
+    let templates = [];
+    let currentTplId = null;
+
+    async function loadTemplates(){
+      try{
+        const res = await fetch('templates/manifest.json',{cache:'no-store'});
+        if(res.ok){
+          const json = await res.json();
+          templates = json.templates || [];
+          if(templates.length){ renderTplList(); return; }
+        }
+      }catch(e){}
+      // дефолт
+      templates = buildDefaultTemplates();
+      renderTplList();
+    }
+
+    function buildDefaultTemplates(){
+      return [
+        {id:'zayavlenie', name:'Заявление на допуск (база)', inline:`В {{rk_branch}}\n\nЗАЯВЛЕНИЕ\nо организации допуска к ВЛ для проведения работ\n\nПросим организовать допуск к объекту: {{object}}.\nЦель: инвентаризация/обследование для включения новых объёмов размещения ВОЛС в ДС к договору {{contract}}.\nПериод работ: {{period}}.\n\nКонтакты ответственного от {{op_full}}: {{contacts}}.\n\nПриложение: 1) Письмо о допуске персонала (ПОТЭЭ). 2) Гарантийное письмо (ТУ, проект/раб.док, мероприятия по ВЛ).\n\n{{op_full}}\n«{{today}}»`, subject:'Заявление на допуск: {{object}}' },
+        {id:'dopusk_pers', name:'Письмо о допуске персонала (ПОТЭЭ) (база)', inline:`В {{rk_branch}}\n\nПИСЬМО О ДОПУСКЕ ПЕРСОНАЛА (ПОТЭЭ)\n\nПросим обеспечить допуск персонала {{op_full}} на объект {{object}} в период {{period}}. Персонал проинструктирован, допуск организуется по требованиям ПОТЭЭ и внутреннего порядка допуска подрядных организаций АО «Россети Кубань».\n\nКонтакт: {{contacts}}\n«{{today}}»`},
+        {id:'garantiynoe', name:'Гарантийное письмо (база)', inline:`В {{rk_branch}}\n\nГАРАНТИЙНОЕ ПИСЬМО\n\n{{op_full}} гарантирует выполнение мероприятий по объекту {{object}}:\n• Получение ТУ;\n• Оформление и согласование с АО «Россети Кубань» проектной и/или рабочей документации;\n• При необходимости — выполнение мероприятий по переустройству/реконструкции ВЛ АО «Россети Кубань».\n\nДополнительно: {{scope}}\n\nОснование: включение новых объёмов размещения ВОЛС в ДС к договору {{contract}}.\n\n«{{today}}»`},
+        {id:'akt', name:'Акт инвентаризации (черновик) (база)', inline:`АКТ ИНВЕНТАРИЗАЦИИ (черновик)\n\nОбъект (ВЛ): {{object}}\nЦель: обследование для включения новых объёмов размещения ВОЛС в ДС к договору {{contract}}.\n\nПо результатам инвентаризации: ________________________________\n\nЭкз. 1 — АО «Россети Кубань»\nЭкз. 2 — {{op_full}}\n\nДата: «{{today}}»\n\nУполномоченный представитель филиала АО «Россети Кубань»: ____________________\nУполномоченный представитель {{op_full}}: ____________________`}
+      ];
+    }
+
+    function renderTplList(){
+      const box = $('#tplList');
+      box.innerHTML = '';
+      templates.forEach(t => {
+        const item = document.createElement('label');
+        item.style.display='flex'; item.style.alignItems='center'; item.style.gap='8px';
+        item.innerHTML = `<input type="radio" name="tpl" value="${t.id}" onchange="pickTpl('${t.id}')"> ${t.name}`;
+        box.appendChild(item);
+      });
+      // preselect first
+      if(templates[0]){ pickTpl(templates[0].id); box.querySelector('input[type=radio]').checked = true; }
+    }
+
+    async function pickTpl(id){
+      currentTplId = id;
+      const t = templates.find(x=>x.id===id); if(!t) return;
+      const ctx = buildCtx();
+      let content = '';
+      if(t.file){
+        try{
+          const res = await fetch('templates/'+t.file,{cache:'no-store'});
+          content = await res.text();
+        }catch(e){ content = 'Не удалось загрузить файл шаблона: '+t.file; }
+      }else{ content = t.inline || ''; }
+      const rendered = render(content, ctx);
+      $('#preview').value = rendered;
+      // subject
+      $('#subject').value = render(t.subject || (`${t.name}: {{object}}`), ctx);
+      updateEmailDraft();
+    }
+
+    function buildCtx(){
+      const opSel = val('op_name');
+      const opFull = (opSel==='Другое' ? (val('op_custom')||'Оператор связи') : resolveOpFull(opSel));
+      return {
+        rk_branch: val('rk_branch')||'[Филиал АО «Россети Кубань»]',
+        op_full: opFull,
+        object: val('object')||'[Объект]',
+        contract: val('contract')||'[Договор]',
+        period: val('period')||'[Период]’,
+        contacts: val('contacts')||'[Контакты]',
+        scope: val('scope')||'—',
+        today: new Date().toLocaleDateString('ru-RU')
+      };
+    }
+
+    function resolveOpFull(short){
+      switch(short){
+        case 'Ростелеком': return 'ПАО «Ростелеком»';
+        case 'МТС': return 'ПАО «МТС»';
+        case 'Билайн': return 'ПАО «ВымпелКом»';
+        case 'МегаФон': return 'ПАО «МегаФон»';
+        case 'ЭР-Телеком': return 'АО «ЭР-Телеком Холдинг»';
+        case 'TTK': return 'АО «Компания ТрансТелеКом»';
+        default: return short;
+      }
+    }
+
+    function toggleCustomOp(){
+      const v = $('#op_name').value; $('#op_custom_wrap').style.display = (v==='Другое')?'block':'none';
+    }
+
+    function render(tpl, ctx){
+      return tpl.replace(/{{\s*(\w+)\s*}}/g, (_,k)=> (ctx[k]??''));
+    }
+
+    function generateAll(){
+      // сохранить в localStorage
+      const keys=['rk_branch','op_name','op_custom','op_unit','object','contract','period','contacts','scope'];
+      const data={}; keys.forEach(k=>data[k]=val(k)); localStorage.setItem('rk_ops_form', JSON.stringify(data));
+      // обновить предпросмотр
+      if(currentTplId) pickTpl(currentTplId);
+      toast('Сформировано');
+    }
+
+    function resetForm(){
+      ['rk_branch','op_custom','op_unit','object','contract','period','contacts','scope'].forEach(id=>document.getElementById(id).value='');
+      $('#op_name').selectedIndex = 0; toggleCustomOp();
+      $('#preview').value='';
+      localStorage.removeItem('rk_ops_form');
+    }
+
+    (function restore(){ try{const raw=localStorage.getItem('rk_ops_form'); if(!raw) return; const d=JSON.parse(raw); Object.entries(d).forEach(([k,v])=>{const el=document.getElementById(k); if(el) el.value=v;});}catch(e){} })();
+
+    function copyPreview(){ const el=$('#preview'); el.select(); el.setSelectionRange(0,99999); document.execCommand('copy'); toast('Скопировано'); }
+
+    function downloadDoc(tplId, filename){
+      const text = $('#preview').value || '';
+      const safeName = (filename||tplId).replace(/\s+/g,'_');
+      const html = `<!doctype html><html lang="ru"><head><meta charset="utf-8"><title>${safeName}</title></head><body><pre style="font-family:Arial,Helvetica,sans-serif;white-space:pre-wrap">${escapeHtml(text)}</pre></body></html>`;
+      const blob = new Blob([html], {type:'application/msword'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = safeName + '.doc'; a.click(); URL.revokeObjectURL(a.href);
+    }
+
+    function escapeHtml(str){ return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#039;'}[m])); }
+
+    // ========= Маршрутизация Email =========
+    async function loadRoutes(){
+      // загружаем из routes.json, если есть
+      try{ const res = await fetch('routes.json',{cache:'no-store'}); if(res.ok){ const json = await res.json(); if(Array.isArray(json.routes)) { window.RK_CFG.routes = json.routes; } } }catch(e){}
+      const sel = $('#route'); sel.innerHTML = '';
+      window.RK_CFG.routes.forEach(r=>{ const o=document.createElement('option'); o.value=r.id; o.textContent=r.name; sel.appendChild(o); });
+      updateEmailDraft();
+    }
+
+    function getCurrentRoute(){ const id=$('#route').value; return window.RK_CFG.routes.find(r=>r.id===id) || window.RK_CFG.routes[0]; }
+
+    function updateEmailDraft(){
+      const r = getCurrentRoute() || {};
+      if(r){ if(!$('#to').value) $('#to').value = r.to || ''; if(!$('#cc').value) $('#cc').value = r.cc || ''; }
+    }
+
+    function openMailto(){
+      const to = encodeURIComponent($('#to').value||'');
+      const cc = encodeURIComponent($('#cc').value||'');
+      const sub = encodeURIComponent($('#subject').value||'');
+      const body = encodeURIComponent($('#emailBody').value + '\n\n---\nВложение: см. сформированный .doc из генератора');
+      const link = `mailto:${to}?subject=${sub}&cc=${cc}&body=${body}`;
+      window.location.href = link;
+    }
+
+    function toast(msg){
+      const t=document.createElement('div'); t.textContent=msg; Object.assign(t.style,{position:'fixed',bottom:'18px',left:'50%',transform:'translateX(-50%)',padding:'10px 14px',background:'#0a7a2d',color:'#fff',borderRadius:'999px',boxShadow:'var(--shadow)',zIndex:9999}); document.body.appendChild(t); setTimeout(()=>t.remove(),1100);
+    }
+
+    // init
+    loadTemplates();
+    loadRoutes();
+  </script>
+</body>
+</html>
